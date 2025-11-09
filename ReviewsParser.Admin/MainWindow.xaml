@@ -1,0 +1,81 @@
+﻿<Window x:Class="ReviewsParser.Admin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:ReviewsParser.Admin.Models"
+        xmlns:converters="clr-namespace:ReviewsParser.Admin"
+        mc:Ignorable="d"
+        Title="Панель управления парсером" Height="450" Width="800">
+
+    <Window.Resources>
+        <converters:Converter x:Key="StatusConverter"/>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <ListView ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}" Grid.Column="0">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="40"/>
+                    <GridViewColumn Header="Сайт" DisplayMemberBinding="{Binding TargetSite}" Width="100"/>
+                    <GridViewColumn Header="Статус" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Status, Converter={StaticResource StatusConverter}}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Агент" DisplayMemberBinding="{Binding AssignedAgentId}" Width="100"/>
+                    <GridViewColumn Header="Прогресс" Width="250">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="Обработано: {0} (Последний URL: {1})">
+                                            <Binding Path="ItemsProcessed"/>
+                                            <Binding Path="ProgressIdentifier"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Обновлено" DisplayMemberBinding="{Binding UpdatedAt, StringFormat='HH:mm:ss'}" Width="100"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+            <Label Content="Выбрать сайт:"/>
+            <ComboBox ItemsSource="{Binding AvailableSites}" 
+              SelectedItem="{Binding SelectedSite}"
+              Margin="0,0,0,10"/>
+            <Button Content="Создать новую задачу" 
+            Command="{Binding CreateTaskCommand}" 
+            Margin="0,0,0,10" Padding="5"/>
+
+            <Button Content="Пауза" Command="{Binding PauseTaskCommand}" Margin="0,0,0,10" Padding="5"/>
+            <Button Content="Продолжить" Command="{Binding ResumeTaskCommand}" Padding="5"/>
+            <Button Content="Экспорт в CSV" Command="{Binding ExportToCsvCommand}" Margin="0,10,0,0" Padding="5" FontWeight="Bold"/>
+
+            <Separator Margin="0,20,0,20"/>
+            <Button Content="Запустить агента" Command="{Binding StartLocalAgentCommand}" Padding="5" Background="#FFE6F2FF"/>
+        </StackPanel>
+    </Grid>
+</Window>

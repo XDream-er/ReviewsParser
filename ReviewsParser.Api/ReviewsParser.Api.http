@@ -1,0 +1,6 @@
+@ReviewsParser.Api_HostAddress = http://localhost:5125
+
+GET {{ReviewsParser.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
