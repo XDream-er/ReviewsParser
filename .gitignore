@@ -426,3 +426,10 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# SQLite temporary files
+*.db-shm
+*.db-wal
+
+# Ignore the database file itself
+*.db
