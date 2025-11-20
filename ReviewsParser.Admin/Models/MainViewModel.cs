@@ -34,7 +34,12 @@ namespace ReviewsParser.Admin
         public string? SelectedSite
         {
             get => _selectedSite;
-            set { _selectedSite = value; OnPropertyChanged(); }
+            set
+            {
+                _selectedSite = value;
+                OnPropertyChanged();
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
 
         private string? _proxyAddress;

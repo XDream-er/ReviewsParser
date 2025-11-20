@@ -17,7 +17,8 @@ public class ApiClient
         var handler = new HttpClientHandler
         {
             UseProxy = false,
-            Proxy = null
+            Proxy = null,
+            AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate
         };
         _client = new HttpClient(handler);
     }

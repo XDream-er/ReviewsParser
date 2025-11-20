@@ -12,6 +12,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true; //сжатие
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -21,6 +26,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+app.UseResponseCompression();
 app.MapControllers(); 
 
 using (var scope = app.Services.CreateScope())
