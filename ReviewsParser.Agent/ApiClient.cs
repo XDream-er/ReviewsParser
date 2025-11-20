@@ -9,8 +9,18 @@ using System.Threading.Tasks;
 
 public class ApiClient
 {
-    private readonly HttpClient _client = new HttpClient();
-    private readonly string _baseUrl = "https://localhost:7182"; 
+    private readonly HttpClient _client;
+    public readonly string _baseUrl = "https://localhost:7182";
+
+    public ApiClient()
+    {
+        var handler = new HttpClientHandler
+        {
+            UseProxy = false,
+            Proxy = null
+        };
+        _client = new HttpClient(handler);
+    }
 
     public async Task<ParsingTask?> GetTaskAsync(string agentId)
     {
@@ -56,5 +66,23 @@ public class ApiClient
     }
 }
 public enum TaskStatus { Pending, Running, Paused, Completed, Failed }
-public class ParsingTask { public int Id { get; set; } public string TargetSite { get; set; } public string? ProgressIdentifier { get; set; } }
-public class ParsedReview { public int ParsingTaskId { get; set; } public string Car { get; set; } public string Author { get; set; } public string Rating { get; set; } public string Url { get; set; } }
+
+public class ParsingTask
+{
+    public int Id { get; set; }
+    public string TargetSite { get; set; }
+    public string? ProgressIdentifier { get; set; }
+    public string? ProxyAddress { get; set; }
+    public string? ProxyUsername { get; set; }
+    public string? ProxyPassword { get; set; }
+}
+
+public class ParsedReview
+{
+    public int ParsingTaskId { get; set; }
+    public string AgentId { get; set; }
+    public string Car { get; set; }
+    public string Author { get; set; }
+    public string Rating { get; set; }
+    public string Url { get; set; }
+}

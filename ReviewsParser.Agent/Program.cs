@@ -65,7 +65,7 @@ while (true)
 
         try
         {
-            await foreach (var review in parser.ParseAsync(task.ProgressIdentifier, cancellationTokenSource.Token))
+            await foreach (var review in parser.ParseAsync(task, apiClient, cancellationTokenSource.Token))
             {
                 cancellationTokenSource.Token.ThrowIfCancellationRequested();
 

@@ -65,6 +65,15 @@ namespace ReviewsParser.Api.Migrations
                     b.Property<string>("ProgressIdentifier")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ProxyAddress")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProxyPassword")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProxyUsername")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 

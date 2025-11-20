@@ -8,6 +8,6 @@ namespace ReviewsParser.Agent.Parsers
 {
     public interface IParser
     {
-        IAsyncEnumerable<ParsedReview> ParseAsync(string? startIdentifier, CancellationToken cancellationToken);
+        IAsyncEnumerable<ParsedReview> ParseAsync(ParsingTask task, ApiClient apiClient, CancellationToken cancellationToken);
     }
 }

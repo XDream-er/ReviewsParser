@@ -1,6 +1,5 @@
 ﻿using CsvHelper;
 using Microsoft.Win32;
-using ReviewsParser.Admin.Models;
 using System;
 using System.Collections.Generic;
 using System.Formats.Asn1;

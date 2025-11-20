@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -7,10 +8,10 @@ namespace ReviewsParser.Agent.Parsers
 {
     public class DromParser : IParser
     {
-        public async IAsyncEnumerable<ParsedReview> ParseAsync(string? startIdentifier, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<ParsedReview> ParseAsync(ParsingTask task, ApiClient apiClient, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var scriptNodes = await GetScriptNodesAsync(cancellationToken);
-
+            var scriptNodes = await GetScriptNodesAsync(task, cancellationToken);
+            string? startIdentifier = task.ProgressIdentifier;
             bool startPointFound = string.IsNullOrEmpty(startIdentifier);
 
             foreach (var scriptNode in scriptNodes)
@@ -28,7 +29,7 @@ namespace ReviewsParser.Agent.Parsers
                         if (item.Value<string>("@type") == "Review")
                         {
                             string url = item.SelectToken("url")?.ToString() ?? "";
-                            if (string.IsNullOrEmpty(url)) continue; 
+                            if (string.IsNullOrEmpty(url)) continue;
 
                             if (!startPointFound)
                             {
@@ -61,13 +62,36 @@ namespace ReviewsParser.Agent.Parsers
                 }
             }
         }
-        private async Task<List<HtmlNode>> GetScriptNodesAsync(CancellationToken cancellationToken)
+        private async Task<List<HtmlNode>> GetScriptNodesAsync(ParsingTask task, CancellationToken cancellationToken)
         {
             string url = "https://www.drom.ru/reviews/";
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             var windows1251 = Encoding.GetEncoding("windows-1251");
 
-            using var httpClient = new HttpClient();
+            var handler = new HttpClientHandler();
+
+            if (!string.IsNullOrEmpty(task.ProxyAddress))
+            {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine($"Используется прокси: {task.ProxyAddress}");
+                Console.ResetColor();
+
+                var proxy = new WebProxy(task.ProxyAddress);
+
+                if (!string.IsNullOrEmpty(task.ProxyUsername))
+                {
+                    proxy.Credentials = new NetworkCredential(task.ProxyUsername, task.ProxyPassword);
+                }
+
+                handler.Proxy = proxy;
+                handler.UseProxy = true;
+            }
+            else
+            {
+                handler.UseProxy = false;
+            }
+            using var httpClient = new HttpClient(handler);
+
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36");
             var responseBytes = await httpClient.GetByteArrayAsync(url, cancellationToken);
             var html = windows1251.GetString(responseBytes);

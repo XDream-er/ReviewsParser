@@ -37,7 +37,11 @@ namespace ReviewsParser.Api.Migrations
                     TargetSite = table.Column<string>(type: "TEXT", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
                     ProgressIdentifier = table.Column<string>(type: "TEXT", nullable: true),
+                    ItemsProcessed = table.Column<int>(type: "INTEGER", nullable: false),
                     AssignedAgentId = table.Column<string>(type: "TEXT", nullable: true),
+                    ProxyAddress = table.Column<string>(type: "TEXT", nullable: true),
+                    ProxyUsername = table.Column<string>(type: "TEXT", nullable: true),
+                    ProxyPassword = table.Column<string>(type: "TEXT", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },

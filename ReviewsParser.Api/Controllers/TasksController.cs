@@ -4,6 +4,20 @@ using ReviewsParser.Api.Data;
 
 namespace ReviewsParser.Api.Controllers
 {
+    public class CreateTaskDto
+    {
+        public string TargetSite { get; set; } = "";
+        public string? ProxyAddress { get; set; }
+        public string? ProxyUsername { get; set; }
+        public string? ProxyPassword { get; set; }
+    }
+    public class ResumeTaskDto
+    {
+        public string? ProxyAddress { get; set; }
+        public string? ProxyUsername { get; set; }
+        public string? ProxyPassword { get; set; }
+    }
+
     [ApiController]
     [Route("api/[controller]")]
     public class TasksController : ControllerBase
@@ -15,12 +29,12 @@ namespace ReviewsParser.Api.Controllers
         public IActionResult GetAvailableSites()
         {
             var availableSites = new List<string>
-        {
-            "drom.ru"
+            {
+                "drom.ru"
             // это на потом
             // "auto.ru",
             // 
-        };
+            };
             return Ok(availableSites);
         }
 
@@ -38,11 +52,21 @@ namespace ReviewsParser.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTask([FromBody] string targetSite)
+        public async Task<IActionResult> CreateTask([FromBody] CreateTaskDto dto)
         {
-            if (string.IsNullOrEmpty(targetSite)) return BadRequest();
+            if (dto == null || string.IsNullOrEmpty(dto.TargetSite)) return BadRequest();
 
-            var task = new ParsingTask { TargetSite = targetSite, Status = Data.TaskStatus.Pending }; 
+            var task = new ParsingTask
+            {
+                TargetSite = dto.TargetSite,
+                Status = Data.TaskStatus.Pending,
+                ProxyAddress = dto.ProxyAddress,
+                ProxyUsername = dto.ProxyUsername,
+                ProxyPassword = dto.ProxyPassword,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
             _context.ParsingTasks.Add(task);
             await _context.SaveChangesAsync();
             return Ok(task);
@@ -59,10 +83,14 @@ namespace ReviewsParser.Api.Controllers
         }
 
         [HttpPut("{id}/resume")]
-        public async Task<IActionResult> ResumeTask(int id)
+        public async Task<IActionResult> ResumeTask(int id, [FromBody] ResumeTaskDto dto)
         {
             var task = await _context.ParsingTasks.FindAsync(id);
-            if (task == null || task.Status != Data.TaskStatus.Paused) return NotFound();
+            if (task == null) return NotFound();
+            if (task.Status != Data.TaskStatus.Paused && task.Status != Data.TaskStatus.Failed) return NotFound();
+            task.ProxyAddress = dto.ProxyAddress;
+            task.ProxyUsername = dto.ProxyUsername;
+            task.ProxyPassword = dto.ProxyPassword;
             task.Status = Data.TaskStatus.Pending;
             task.AssignedAgentId = null;
             await _context.SaveChangesAsync();

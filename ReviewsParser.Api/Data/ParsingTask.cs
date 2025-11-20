@@ -7,7 +7,7 @@ namespace ReviewsParser.Api.Data
         Pending, 
         Running, 
         Paused, 
-        Completed, 
+        Completed,
         Failed   
     }
 
@@ -20,6 +20,9 @@ namespace ReviewsParser.Api.Data
         public string? ProgressIdentifier { get; set; }
         public int ItemsProcessed { get; set; } = 0;
         public string? AssignedAgentId { get; set; }
+        public string? ProxyAddress { get; set; }
+        public string? ProxyUsername { get; set; }
+        public string? ProxyPassword { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
