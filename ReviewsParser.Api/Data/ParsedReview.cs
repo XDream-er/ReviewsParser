@@ -10,6 +10,7 @@ namespace ReviewsParser.Api.Data
         public string Car { get; set; }
         public string Author { get; set; }
         public string Rating { get; set; }
+        public string ReviewText { get; set; }
         public string Url { get; set; }
     }
 }
