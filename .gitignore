@@ -432,4 +432,6 @@ FodyWeavers.xsd
 *.db-wal
 
 # Ignore the database file itself
-*.db
+*.db*.db
+*.db-shm
+*.db-wal
